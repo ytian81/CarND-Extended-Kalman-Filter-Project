@@ -74,10 +74,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
         ekf_.x_(0) = ro * std::cos(theta);
         ekf_.x_(1) = ro * std::sin(theta);
         // Project radical velocity to x and y axis
-        ekf_.x_(2) = ro_dot * std::cos(theta);
-        ekf_.x_(3) = ro_dot * std::sin(theta);
-    }
-    else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
+        // ekf_.x_(2) = ro_dot * std::cos(theta);
+        // ekf_.x_(3) = ro_dot * std::sin(theta);
+    } else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
       // TODO: Initialize state.
         ekf_.x_(0) = measurement_pack.raw_measurements_(0);
         ekf_.x_(1) = measurement_pack.raw_measurements_(1);

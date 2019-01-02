@@ -1,4 +1,5 @@
 #include "kalman_filter.h"
+#include <iostream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -59,9 +60,16 @@ VectorXd CalculateZPred(const Eigen::VectorXd& x_state) {
   float vx = x_state(2);
   float vy = x_state(3);
 
-  z_pred(0) = std::sqrt(px*px + py*py);
+
+  float c1 = px*px + py*py;
+  if (fabs(c1) < 0.0001) {
+    std::cout << "CalculateJacobian () - Error - Division by Zero" << std::endl;
+    return z_pred;
+  }
+
+  z_pred(0) = std::sqrt(c1);
   z_pred(1) = std::atan2(py, px);
-  z_pred(2) = (px*vx+py*vy)/std::sqrt(px*px+py*py);
+  z_pred(2) = (px*vx+py*vy)/std::sqrt(c1);
 
   return z_pred;
 }
@@ -72,6 +80,11 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
    */
   VectorXd z_pred = CalculateZPred(x_);
   VectorXd y = z - z_pred;
+  if (y(1) <  -M_PI) {
+      y(1) += 2*M_PI;
+  } else if (y(1) > M_PI){
+      y(1) -= 2*M_PI;
+  }
   MatrixXd Ht = H_.transpose();
   MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
